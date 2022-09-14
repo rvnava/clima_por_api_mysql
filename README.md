@@ -43,7 +43,7 @@ Para esta práctica se usarán los siguientes nodos:
 	 
  - Arrastrar los nodos necesarios para obtener el flujo similar al de la siguiente imagen
 
-![](https://github.com/rvnava/flow5-g10/blob/main/Flujo-broker-publico.png?raw=true)
+![](https://github.com/rvnava/clima_por_api_mysql/blob/main/Flujo-broker-publico.png?raw=true)
 
  - Conectar el nodo **json** con los 2 nodos **function**
  - Conectar cada nodo **function** con cada nodo **gauge**
@@ -145,14 +145,14 @@ Para esta práctica se usarán los siguientes nodos:
 Los resultados de la ejecución se pueden visualizar en la dirección del [dashboard](http://localhost:1880/ui/) de **Node-RED**
 
 La siguiente imagen muestra el flujo realizado en **Node-Red**
-![](https://github.com/rvnava/flow5-g10/blob/main/Flujo-broker-publico.png?raw=true)
+![](https://github.com/rvnava/clima_por_api_mysql/blob/main/Flujo-broker-publico.png?raw=true)
 
 La siguiente imagen muestra el Dashboard
-![](https://github.com/rvnava/flow5-g10/blob/main/Dashboard-Broker-publico.png?raw=true)
+![](https://github.com/rvnava/clima_por_api_mysql/blob/main/Dashboard-Broker-publico.png?raw=true)
 
 ## Evidencias
 
- - [Repositorio en GitHub](https://github.com/rvnava/flow5-g10.git)
+ - [Repositorio en GitHub](https://github.com/rvnava/clima_por_api_mysql.git)
  - Video en youtube 
 	 - No disponible
  - blogs
