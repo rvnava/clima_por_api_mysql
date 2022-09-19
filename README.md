@@ -20,7 +20,19 @@ Para esta práctica se usarán los siguientes nodos:
  - Sofware
 	 - Equipo o Máquina virtual con [Ubuntu](https://ubuntu.com/) con una versión mínima 20.04
 	 - [Node-RED](https://nodered.org/) (notas para [instalación](https://github.com/nodesource/distributions/blob/master/README.md))
+	 - Servidor MySQL
+		sudo apt update
+        	sudo apt upgrade
+        	sudo apt install mysql-server
 	 - [Git](https://git-scm.com/) (notas para [instalación](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git))
+	 - [Grafana](https://grafana.com) (notas para [instalación](https://grafana.com/grafana/download?pg=get&plcmt=selfmanaged-box1-cta1&edition=oss))
+	 	- https://grafana.com/grafana/download?pg=get&plcmt=selfmanaged-box1-cta1
+			seleccionar Edition: OSS
+			sudo apt-get install -y adduser libfontconfig1
+			wget https://dl.grafana.com/oss/release/grafana_9.1.4_amd64.deb
+			sudo dpkg -i grafana_9.1.4_amd64.deb
+
+
  - Hardware
 	 - PC o LapTop con Linux, Windows
 	 - Mínimo 8 Gb en RAM
@@ -30,20 +42,30 @@ Para esta práctica se usarán los siguientes nodos:
 
  - [Node-Red](https://nodered.org/)
  - [Git](https://git-scm.com/)
+ - [Grafana](https://grafana.com)
 
 ## Instrucciones
 
 **Requerimientos previos**
-	 - Tener instalado el sofware necesario listado en el apartado 
+	 - Tener instalado el sofware necesario listado en el apartado "Software"
 
 **Material necesario**
 	 - El programa "node-red" debe estár ejecución
+		node-red
 	 - Tener la aplicación de Node-RED abierta en un navegador con la dirección "http://localhost:1880"
+	 - El programa "Grafana" debe estár ejecución
+		sudo /bin/systemctl start grafana-server
+	 - Tener la aplicación de Grafana abierta en un navegador con la dirección "http://localhost:3000"
+	 	Iniciar sesion
+		- User: admin
+		- Password: admin
+		- Nueva contraseña: any22any
 	 - Ejecutar en una terminal el comando nslookup broker.hivemq.com para obtener la dirección IP del servidror público y copiar la ip "Address" (18.158.239.107)
 	 
- - Arrastrar los nodos necesarios para obtener el flujo similar al de la siguiente imagen
+ - Arrastrar los nodos necesarios para obtener el flujo similar al de las siguientes imagenes
 
 ![](https://github.com/rvnava/clima_por_api_mysql/blob/main/Flujo-broker-publico.png?raw=true)
+![](https://github.com/rvnava/clima_por_api_mysql/blob/main/Flujo-broker-publico_2.png?raw=true)
 
  - Conectar el nodo **json** con los 2 nodos **function**
  - Conectar cada nodo **function** con cada nodo **gauge**
@@ -89,28 +111,18 @@ Para esta práctica se usarán los siguientes nodos:
         Cambiar el nombre a humedad
 
  - Doble clic en el nodo gauge que está conectado al nodo de temperatura
-        Seleccionar grupo temperatura
-        Label: Temperatura
-        Units: grados centigrados (C)
-        Rangos 2 a 38, seleccionar de acuerdo a donde nos encontremos
-        Cambiar color azul-frio 2-18
-        Verde 18-26
+        Desactivar este nodo
         clic en Done
 
  - Doble clic en el nodo gauge que está conectado al nodo humedad
-        Seleccionar grupo humedad
-        Label: Humedad relativa
-        Tipo : level
-        Units: %
-        min 0 max 100 (de acuerdo al rango del sensor)
+        Desactivar este nodo
         clic en Done
 
  - Conectar los nodos **function** temperatura y humedad al nodo **chart**
  - Agregar un nuevo grupo para el nodo histórico llamado HistoricoLocal
  - Dobleclic en el nodo chart
-        Label: Historico local
-        x-axis: 20 min
-        y-xis: 0 -100
+        Desactivar este nodo
+        clic en Done
 
  - Agregar un enviador en el tema
         codigoIoT/flow5/mqtt/clima
@@ -136,8 +148,53 @@ Para esta práctica se usarán los siguientes nodos:
 	global.set ("humAPI", msg.payload);
 	return msg;
 
+ - Desactivar los nodos Gauge de Temperatura y Humedad para la información obtenida por API.
 
- - Oprimir Deploy
+ - Desactivar los nodos Line chart de Temperatura y Humedad historicos para la información obtenida por API.
+
+ - Configurar base de datos de MySQL
+ 	- create database codigoIoT; -- Crea la base de datos codigoIoT
+ 	- use codigoIoT; -- Selecciona la base de datos codigoIoT
+ 	- create user 'raulraul'@'localhost' identified by '1234'; -- crea el usuario raulraul y establece la contraseña
+ 	- grant all privileges on *.* to 'hugohugo'@'localhost'; -- Le proporciona los privilegios a todas las tablas
+ 	- create table clima (id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP, nombre VARCHAR (248) NOT NULL, temperatura FLOAT (4,2) NOT NULL, humedad INT (3) NOT NULL); -- Crea la tabla clima
+
+ - Ingresar en la página de NodeRed 
+ 	- Instalar nodos MySQL
+	- Dirigirse a la pestaña Install del menú Manage Palett
+	- node-red-node-mysql
+
+ - Ingresar en la página de Grafana 
+	- Agregar una fuente de información
+		- Configuraciones > Data Source
+		- Hacer clic en el boton Add Data Source
+		- Seleccionar la opción MySQL
+	- Configurar el DataSource de MySQL
+		- Host: localhost:3306
+		- Database: codigoIoT
+		- User & Password: Nombre de usuario y contraseña generados para MySQL
+ 	- Agregar cuatro páneles
+		- clic en el icono de grafana
+		- esquina superior derecha > agregar panel
+		- Generar las gráficas para datos de temperatura y humedad solo de nuestro usuario así como de los datos históricos en Grafana de acuerdo a los datos de la siguiente imágen
+			- Temperatura
+				![](https://github.com/rvnava/clima_por_api_mysql/blob/main/Temperatura.png?raw=true)
+			- Humedad
+				![](https://github.com/rvnava/clima_por_api_mysql/blob/main/Humedad.png?raw=true)
+			- Historico temperatura
+				![](https://github.com/rvnava/clima_por_api_mysql/blob/main/Historico_temperatura.png?raw=true)
+			- Historico humedad
+				![](https://github.com/rvnava/clima_por_api_mysql/blob/main/Historico_humedad.png?raw=true)
+	- Insertar las gráficas de Grafana en NodeRed
+		https://grafana.com/docs/grafana/v9.0/sharing/share-panel/
+		https://www.itpanther.com/embedding-grafana-in-iframe/
+
+		- Obtener el codigo embed de cada panel
+		- Insertar el codigo en un nodo Template en el Flow de NodeRed
+		- Modificar el archivo grafana.ini que se encuentra en /etc/grafana
+	    	- allow_embed = true
+
+ 	- Oprimir Deploy
   
 
 ## Resultados
